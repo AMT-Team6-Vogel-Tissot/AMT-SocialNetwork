@@ -8,18 +8,21 @@ public class Twitter implements IObservable {
     private List<String> _twits = new ArrayList<String>();
     //endregion private attributes
 
-    public Twitter(){}
+    public Twitter(){
+        _observers = new ArrayList<>();
+        _twits = new ArrayList<>();
+    }
 
     public Twitter(List<IObserver> observers){
-        throw new UnsupportedOperationException();
+        this._observers = observers;
+        _twits = new ArrayList<>();
     }
 
     public List<IObserver> getObservers(){
-        throw new UnsupportedOperationException();
-    }
+        return _observers;    }
 
     public List<String> getTwits(){
-        throw new UnsupportedOperationException();
+        return _twits;
     }
 
     public String lastTwit(){
@@ -27,25 +30,37 @@ public class Twitter implements IObservable {
     }
 
     public void post(String twit){
-        throw new UnsupportedOperationException();
+        throw new RuntimeException();
     }
 
     @Override
     public void subscribe(List<IObserver> observer) {
-        throw new UnsupportedOperationException();
+        for(IObserver o : observer){
+            if(_observers.contains(o)){
+                throw new SubscriberAlreadyExistsException();
+            }else {
+                _observers.add(o);
+            }
+        }
     }
 
     @Override
     public void unsubscribe(IObserver observer) {
-        throw new UnsupportedOperationException();
+        if(_observers.isEmpty()) {
+            throw new EmptyListOfSubscribersException();
+        }
+
+        if(!_observers.remove(observer)) {
+            throw new SubscriberNotFoundException();
+        }
     }
 
     @Override
     public void notifyObservers() {
-        throw new UnsupportedOperationException();
+        throw new EmptyListOfSubscribersException();
     }
 
-    public class TwitterException extends Exception { }
+    public class TwitterException extends RuntimeException { }
     public class EmptyListOfSubscribersException extends TwitterException { }
     public class SubscriberAlreadyExistsException extends TwitterException { }
     public class SubscriberNotFoundException extends TwitterException { }
